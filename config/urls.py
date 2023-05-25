@@ -21,20 +21,15 @@ from django.http import HttpResponse
 from django.urls import path
 
 
-def foo(request):
-    data = {"message": "Data in massage."}
+def get_pokemon(request, name):
+    data = {"pokemon name": name}
 
     return HttpResponse(
         content_type="application/json", content=json.dumps(data)
-    )  # sending data
-
-
-def foo_2(request):
-    return HttpResponse("<h3>TEST</h3><p>Test output</p>")
+    )
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("foo/", foo),
-    path("foo_2/", foo_2),
+    path("api/pokemon/<name>", get_pokemon),
 ]
