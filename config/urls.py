@@ -15,12 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 import json
-import requests
 
+import requests
+from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
-from django.conf import settings
 
 
 def get_pokemon(request, name):

@@ -1,6 +1,5 @@
 import requests
 
-
 HOST = "http://localhost:8000"
 
 
