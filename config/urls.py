@@ -15,19 +15,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 import json
+from dataclasses import asdict, dataclass
+
 import requests
-
-from dataclasses import dataclass, asdict
-
 from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
 
 
-def filter_by_keys(source:dict, keys: list[str]) -> dict:
+def filter_by_keys(source: dict, keys: list[str]) -> dict:
     filtered_data = {}
-    for key,value in source.items():
+    for key, value in source.items():
         if key in keys:
             filtered_data[key] = value
     return filtered_data
@@ -44,9 +43,9 @@ class Pokemon:
     @classmethod
     def from_raw_data(cls, raw_data: dict) -> "Pokemon":
         filtered_data = filter_by_keys(
-        raw_data, 
-        cls.__dataclass_fields__.keys()
-    )
+            raw_data,
+            cls.__dataclass_fields__.keys(),
+        )
         return cls(**filtered_data)
 
 
@@ -83,12 +82,13 @@ def get_pokemon(request, name):
 
 def get_pokemon_on_mobile(request, name):
     pokemon: Pokemon = _get_pokemon(name)
-    
+
     only_fields = ("id", "name", "base_experience")
     result = filter_by_keys(asdict(pokemon), only_fields)
 
     return HttpResponse(
-        content_type="application/json", content=json.dumps(result)
+        content_type="application/json",
+        content=json.dumps(result),
     )
 
 
