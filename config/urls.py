@@ -22,6 +22,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
+from django.views.decorators.csrf import csrf_exempt
 
 
 def filter_by_keys(source: dict, keys: list[str]) -> dict:
@@ -73,11 +74,27 @@ def _get_pokemon(name) -> Pokemon:
     return pokemon
 
 
-def get_pokemon(request, name):
+@csrf_exempt
+def differ_request_method(request, name):
+    if request.method == "GET":
+        return _get_pokemon_response(name)
+    if request.method == "DELETE":
+        return _delete_pokemon_response(name)
+
+
+def _get_pokemon_response(name):
     pokemon: Pokemon = _get_pokemon(name)
     return HttpResponse(
         content_type="application/json", content=json.dumps(asdict(pokemon))
     )
+
+
+def _delete_pokemon_response(name):
+    if name in POKEMONS:
+        del POKEMONS[name]
+        return HttpResponse(f"<p>Deleted {name} successfully.</p>")
+    else:
+        return HttpResponse(f"<p>{name} pokemon isn't cached.</p>")
 
 
 def get_pokemon_on_mobile(request, name):
@@ -92,8 +109,20 @@ def get_pokemon_on_mobile(request, name):
     )
 
 
+def get_all_pokemon(request):
+    pokemons_list = []
+    for value in POKEMONS.values():
+        pokemons_list.append(asdict(value))
+
+    return HttpResponse(
+        content_type="application/json",
+        content=json.dumps(pokemons_list),
+    )
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/pokemon/<str:name>/", get_pokemon),
-    path("api/mobile/pokemon/<str:name>/", get_pokemon_on_mobile),
+    path("api/pokemon/", get_all_pokemon),
+    path("api/pokemon/<str:name>/", differ_request_method),
+    path("api/pokemon/mobile/<str:name>/", get_pokemon_on_mobile),
 ]
