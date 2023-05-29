@@ -15,26 +15,114 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 import json
+from dataclasses import asdict, dataclass
 
+import requests
+from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
+from django.views.decorators.csrf import csrf_exempt
 
 
-def foo(request):
-    data = {"message": "Data in massage."}
+def filter_by_keys(source: dict, keys: list[str]) -> dict:
+    filtered_data = {}
+    for key, value in source.items():
+        if key in keys:
+            filtered_data[key] = value
+    return filtered_data
+
+
+@dataclass
+class Pokemon:
+    id: int
+    name: str
+    weight: int
+    height: int
+    base_experience: int
+
+    @classmethod
+    def from_raw_data(cls, raw_data: dict) -> "Pokemon":
+        filtered_data = filter_by_keys(
+            raw_data,
+            cls.__dataclass_fields__.keys(),
+        )
+        return cls(**filtered_data)
+
+
+POKEMONS: dict[str, Pokemon] = {}
+
+
+def get_pokemon_from_api(name: str) -> Pokemon:
+    url = settings.POKEAPI_BASE_URL + f"/{name}"
+    response = requests.get(url)
+    data = response.json()
+
+    return Pokemon.from_raw_data(data)
+
+
+def _get_pokemon(name) -> Pokemon:
+    """
+    Take pokemon from the cache or
+    fetch it from the API and save to the cache.
+    """
+    if name in POKEMONS:
+        pokemon = POKEMONS[name]
+    else:
+        pokemon: Pokemon = get_pokemon_from_api(name)
+        POKEMONS[name] = pokemon
+    return pokemon
+
+
+@csrf_exempt
+def differ_request_method(request, name):
+    if request.method == "GET":
+        return _get_pokemon_response(name)
+    if request.method == "DELETE":
+        return _delete_pokemon_response(name)
+
+
+def _get_pokemon_response(name):
+    pokemon: Pokemon = _get_pokemon(name)
+    return HttpResponse(
+        content_type="application/json", content=json.dumps(asdict(pokemon))
+    )
+
+
+def _delete_pokemon_response(name):
+    if name in POKEMONS:
+        del POKEMONS[name]
+        return HttpResponse(f"<p>Deleted {name} successfully.</p>")
+    else:
+        return HttpResponse(f"<p>{name} pokemon isn't cached.</p>")
+
+
+def get_pokemon_on_mobile(request, name):
+    pokemon: Pokemon = _get_pokemon(name)
+
+    only_fields = ("id", "name", "base_experience")
+    result = filter_by_keys(asdict(pokemon), only_fields)
 
     return HttpResponse(
-        content_type="application/json", content=json.dumps(data)
-    )  # sending data
+        content_type="application/json",
+        content=json.dumps(result),
+    )
 
 
-def foo_2(request):
-    return HttpResponse("<h3>TEST</h3><p>Test output</p>")
+def get_all_pokemon(request):
+    pokemons_list = []
+    for value in POKEMONS.values():
+        pokemons_list.append(asdict(value))
+
+    return HttpResponse(
+        content_type="application/json",
+        content=json.dumps(pokemons_list),
+    )
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("foo/", foo),
-    path("foo_2/", foo_2),
+    path("api/pokemon/", get_all_pokemon),
+    path("api/pokemon/<str:name>/", differ_request_method),
+    path("api/pokemon/mobile/<str:name>/", get_pokemon_on_mobile),
 ]
