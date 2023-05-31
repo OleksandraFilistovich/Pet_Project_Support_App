@@ -16,6 +16,8 @@ Including another URLconf
 """
 import json
 from dataclasses import asdict, dataclass
+from random import choice, randint
+from string import ascii_letters
 
 import requests
 from django.conf import settings
@@ -23,6 +25,8 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
+
+from core.models import User
 
 
 def filter_by_keys(source: dict, keys: list[str]) -> dict:
@@ -120,9 +124,53 @@ def get_all_pokemon(request):
     )
 
 
+# *****************************************************
+# All roles are hardcoded instead of beeing used in the database
+# *****************************************************
+ROLES = {
+    "ADMIN": 1,
+    "MANAGER": 2,
+    "USER": 3,
+}
+
+
+def _get_random_string(size: int = 5) -> str:
+    return "".join([choice(ascii_letters) for _ in range(size)])
+
+
+def create_random_user(request):
+    name = _get_random_string(size=randint(5, 10))
+    email_af = _get_random_string(size=randint(2, 4)).lower()
+    email_domain = choice(["net", "com", "io"])
+    email_full = "".join([name, "@", email_af, ".", email_domain])
+
+    random_user = User.objects.create(
+        username=name,
+        email=email_full,
+        first_name=_get_random_string(size=randint(5, 10)),
+        last_name=_get_random_string(size=randint(5, 10)),
+        role=ROLES["USER"],
+        password=_get_random_string(size=randint(10, 20)),
+    )
+    result = {
+        "id": random_user.pk,
+        "username": random_user.username,
+        "email": random_user.email,
+        "firstName": random_user.first_name,
+        "lastName": random_user.last_name,
+        "role": random_user.role,
+        "password": random_user.password,
+    }
+    return HttpResponse(
+        content_type="application/json",
+        content=json.dumps(result),
+    )
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/pokemon/", get_all_pokemon),
     path("api/pokemon/<str:name>/", differ_request_method),
     path("api/pokemon/mobile/<str:name>/", get_pokemon_on_mobile),
+    path("create-random-user/", create_random_user),
 ]

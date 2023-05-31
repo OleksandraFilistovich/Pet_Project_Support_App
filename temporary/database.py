@@ -14,6 +14,7 @@ class DataMapper:
         query = f"CREATE TABLE IF NOT EXIST {table_name}"
         self.__session.execute(query)
 
+
 class Schema:
     def __init__(self):
         self._mapper = DataMapper(self)
@@ -30,6 +31,7 @@ class Schema:
         self._mapper.select()
         ...
 
+
 @dataclass
 class User(Schema):
     username: str
@@ -37,6 +39,7 @@ class User(Schema):
     email: str
     first_name: str
     last_name: str
+
 
 @dataclass
 class Request(Schema):
@@ -46,17 +49,13 @@ class Request(Schema):
     user_id: int
     manager_id: int
 
+
 @dataclass
 class Message(Schema):
     user_id: int
     request_id: int
 
 
-john = User(
-    id = 1, 
-    username = "john", 
-    email = "1@gmail.com", 
-    password="2222"
-)
+john = User(id=1, username="john", email="1@gmail.com", password="2222")
 
 john.save()
