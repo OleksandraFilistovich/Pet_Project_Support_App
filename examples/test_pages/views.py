@@ -7,7 +7,9 @@ from string import ascii_letters
 
 import requests
 from django.conf import settings
+from django.contrib import admin
 from django.http import HttpResponse
+from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
 from core.models import User
@@ -163,3 +165,12 @@ def create_random_user(request) -> HttpResponse:
         content_type="application/json",
         content=json.dumps(result),
     )
+
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/pokemon/", get_all_pokemon),
+    path("api/pokemon/<str:name>/", differ_request_method),
+    path("api/pokemon/mobile/<str:name>/", get_pokemon_on_mobile),
+    path("create-random-user/", create_random_user),
+]
