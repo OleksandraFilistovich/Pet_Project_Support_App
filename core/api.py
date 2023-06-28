@@ -34,6 +34,7 @@ def create_user(request):
         raise ValueError("Only POST method is allowed")
 
     create_serializer = UserCreateSerializer(data=json.loads(request.body))
+
     is_valid = create_serializer.is_valid()
     if not is_valid:
         raise SerializerError(create_serializer)

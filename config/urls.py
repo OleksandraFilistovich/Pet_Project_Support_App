@@ -19,8 +19,10 @@ from django.contrib import admin
 from django.urls import path
 
 from core.api import create_user
+from core.hw_serializers import test_serializers
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("users/", create_user),
+    path("users/test/", test_serializers),
 ]
