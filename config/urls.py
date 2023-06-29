@@ -19,11 +19,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 from core.api import UserRegistrationAPIView
-from core.hw_serializers import test_serializers
+from examples.hw_serializers import test_serializers
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("users/test/", test_serializers),
     path("users/", UserRegistrationAPIView.as_view()),
     path("auth/", include("authentication.urls")),
 ]
