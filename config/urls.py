@@ -18,12 +18,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-import view.views as view
+from core.api import create_user
+from core.hw_serializers import test_serializers
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/pokemon/", view.get_all_pokemon),
-    path("api/pokemon/<str:name>/", view.differ_request_method),
-    path("api/pokemon/mobile/<str:name>/", view.get_pokemon_on_mobile),
-    path("create-random-user/", view.create_random_user),
+    path("users/", create_user),
+    path("users/test/", test_serializers),
 ]
