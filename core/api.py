@@ -1,3 +1,19 @@
+from django.contrib.auth import get_user_model
+from rest_framework.generics import CreateAPIView
+
+from core.serializers import UserRegistrationSerializer
+
+User = get_user_model()
+
+
+class UserRegistrationAPIView(CreateAPIView):
+    serializer_class = UserRegistrationSerializer
+
+    def post(self, request):
+        return super().post(request)
+
+
+"""
 import json
 from typing import Callable
 
@@ -29,10 +45,14 @@ def base_error_handler(func: Callable):
 
 
 @base_error_handler
-def create_user(request):
-    if request.method != "POST":
-        raise ValueError("Only POST method is allowed")
+def user_router(request):
+    if request.method == "POST":
+        return create_user(request)
+    elif request.method == "GET":
+        return retrieve_user(request)
 
+
+def create_user(request):
     create_serializer = UserCreateSerializer(data=json.loads(request.body))
 
     is_valid = create_serializer.is_valid()
@@ -43,3 +63,11 @@ def create_user(request):
 
     user_public_serializer = UserPublicSerializer(user)
     return JsonResponse(user_public_serializer.data)
+
+
+def retrieve_user(request):
+    user = User.object.get()
+    user_public_serializer = UserPublicSerializer(user)
+
+    return JsonResponse(user_public_serializer.data)
+"""

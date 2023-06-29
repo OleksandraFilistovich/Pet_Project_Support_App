@@ -1,12 +1,22 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
+
+from core.constants import Role
 
 User = get_user_model()
 
 
-class UserCreateSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField()
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email", "password"]
+
+    def validate(self, attrs):
+        attrs["password"] = make_password(attrs["password"])
+        attrs["role"] = Role.USER
+
+        return attrs
 
 
 class UserPublicSerializer(serializers.ModelSerializer):
