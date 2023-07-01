@@ -18,6 +18,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         return attrs
 
+    def to_representation(self, instance: User):
+        serializer = UserPublicSerializer(instance)
+        return serializer.data
+
 
 class UserPublicSerializer(serializers.ModelSerializer):
     class Meta:
