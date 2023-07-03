@@ -1,5 +1,5 @@
-from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from tickets.models import Ticket
@@ -30,7 +30,6 @@ class TicketAPIViewSet(ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def take(self, request, pk):
-
         ticket = self.get_object()
 
         # ===== CUSTOM SERVISE APPROACH =====

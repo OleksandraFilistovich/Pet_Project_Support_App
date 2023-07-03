@@ -19,7 +19,7 @@ class TicketTakeSerializer(serializers.Serializer):
         # ? You can handle the specific validation if
         # ? the manager already has 10 tickets assigned
         return manager_id
-    
+
     def assign(self, ticket: Ticket) -> Ticket:
         if not ticket.manager_id:
             ticket.manager_id = self.validated_data["manager_id"]
