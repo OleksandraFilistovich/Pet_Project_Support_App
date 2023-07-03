@@ -6,13 +6,12 @@ from random import choice, randint
 from string import ascii_letters
 
 import requests
+from core.models import User
 from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
-
-from core.models import User
 
 # * VARIABLES AND NEEDED DICTS *
 # Cache simulated by storing pokemons in this dict
