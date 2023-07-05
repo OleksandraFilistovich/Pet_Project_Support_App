@@ -2,11 +2,10 @@ import json
 from random import choice
 from string import ascii_letters
 
+from core.errors import SerializerError
 from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from rest_framework import serializers
-
-from core.errors import SerializerError
 
 User = get_user_model()
 
