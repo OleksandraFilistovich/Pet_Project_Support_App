@@ -11,7 +11,7 @@ class RoleIsAdmin(BasePermission):
 
 class RoleIsManager(BasePermission):
     def has_permission(self, request, view):
-        return request.user.role == Role.MANGER
+        return request.user.role == Role.MANAGER
 
 
 class RoleIsUser(BasePermission):
