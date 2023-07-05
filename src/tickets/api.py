@@ -1,14 +1,20 @@
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.db.models.query import QuerySet
+
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from tickets.models import Ticket
+from tickets.models import Ticket, Message
 from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
-from tickets.serializers import TicketSerializer, TicketTakeSerializer
+from tickets.serializers import TicketSerializer, TicketTakeSerializer, MessageSerializer
 from users.constants import Role
+
+User = get_user_model()
 
 
 class TicketAPIViewSet(ModelViewSet):
@@ -85,8 +91,33 @@ class TicketAPIViewSet(ModelViewSet):
 
 
 class MessageListCreateAPIView(ListCreateAPIView):
-    serializer_class = TicketSerializer
+    serializer_class = MessageSerializer
+    lookup_field = "ticket_id"
+    
+    @staticmethod
+    def get_ticket(user: User, ticket_id: int) -> QuerySet:
+        """Get tickets for current user."""
 
+        tickets = Ticket.objects.filter(Q(user=user) | Q(manager=user))
+        return get_object_or_404(tickets, id=ticket_id)
+    
     def get_queryset(self) -> QuerySet:
-        # ! ToImplement
-        raise NotImplementedError
+        ticket_id = self.kwargs[self.lookup_field]
+        ticket = self.get_ticket(self.request.user, ticket_id)
+
+        return Message.objects.filter(ticket=ticket)
+    
+    def post(self, request, ticket_id: int):
+        ticket = self.get_ticket(request.user, ticket_id)
+        payload = {
+            "ticket": ticket.id,
+            "text": request.data["text"],
+            "user": request.user.id,
+        }
+
+        serializer = self.get_serializer(data=payload)
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

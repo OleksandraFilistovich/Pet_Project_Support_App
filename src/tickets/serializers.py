@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from tickets.models import Ticket
+from tickets.models import Ticket, Message
 from users.constants import Role
 
 
@@ -51,3 +51,13 @@ class TicketTakeSerializer(serializers.Serializer):
             raise ValueError("Wrong ID. User with manager role expected.")
 
         return ticket
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ["id", "ticket", "text", "user", "timestamp"]
+        read_only_fields = ["id", "timestamp"]
+    
+    def validate(self, attrs):
+        return attrs
