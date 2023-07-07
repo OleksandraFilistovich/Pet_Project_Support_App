@@ -50,7 +50,7 @@ class TicketAPIViewSet(ModelViewSet):
         elif self.action == "take" or self.action == "reject":
             permission_classes = [RoleIsManager]
         elif self.action == "assign":
-            permission_classes = [RoleIsAdmin & IsManagerId]
+            permission_classes = [RoleIsAdmin, IsManagerId]
         else:
             permission_classes = []
         return [permission() for permission in permission_classes]

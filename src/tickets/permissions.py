@@ -29,6 +29,8 @@ class IsOwner(BasePermission):
 
 
 class IsManagerId(BasePermission):
+    message = "Wrong ID. User with manager role expected."
+
     def has_permission(self, request, view):
         User = get_user_model()
         user = User.objects.get(pk=request.data["manager_id"])
