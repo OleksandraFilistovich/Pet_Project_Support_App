@@ -10,7 +10,8 @@ from rest_framework.viewsets import ModelViewSet
 
 from tickets.models import Message, Ticket
 # fmt: off
-from tickets.permissions import IsOwner, RoleIsAdmin, RoleIsManager, RoleIsUser
+from tickets.permissions import (IsManagerId, IsOwner, RoleIsAdmin,
+                                 RoleIsManager, RoleIsUser)
 from tickets.serializers import (MessageSerializer, TicketSerializer,
                                  TicketTakeSerializer)
 from users.constants import Role
@@ -49,7 +50,7 @@ class TicketAPIViewSet(ModelViewSet):
         elif self.action == "take" or self.action == "reject":
             permission_classes = [RoleIsManager]
         elif self.action == "assign":
-            permission_classes = [RoleIsAdmin]
+            permission_classes = [RoleIsAdmin & IsManagerId]
         else:
             permission_classes = []
         return [permission() for permission in permission_classes]
