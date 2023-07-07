@@ -39,9 +39,9 @@ class TicketTakeSerializer(serializers.Serializer):
         return ticket
 
     def assign(self, ticket: Ticket):
-        if ticket.manager_id != self.validated_data["manager_id"]:
+        if ticket.manager_id != self.validated_data["mansager_id"]:
             ticket.manager_id = self.validated_data["manager_id"]
-            # ticket.save()
+            ticket.save()
         else:
             raise ValueError(
                 "Wrong ID. This manager already assigned to this ticket.",
