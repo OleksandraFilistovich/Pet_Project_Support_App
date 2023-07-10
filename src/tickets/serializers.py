@@ -1,8 +1,6 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from tickets.models import Ticket
-from users.constants import Role
+from tickets.models import Message, Ticket
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -41,13 +39,22 @@ class TicketTakeSerializer(serializers.Serializer):
         return ticket
 
     def assign(self, ticket: Ticket):
-        User = get_user_model()
-        user = User.objects.get(pk=self.validated_data["manager_id"])
-
-        if user.role == Role.MANAGER:
+        if ticket.manager_id != self.validated_data["manager_id"]:
             ticket.manager_id = self.validated_data["manager_id"]
             ticket.save()
         else:
-            raise ValueError("Wrong ID. User with manager role expected.")
+            raise ValueError(
+                "Wrong ID. This manager already assigned to this ticket.",
+            )
 
         return ticket
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ["id", "ticket", "text", "user", "timestamp"]
+        read_only_fields = ["id", "timestamp"]
+
+    def validate(self, attrs):
+        return attrs
