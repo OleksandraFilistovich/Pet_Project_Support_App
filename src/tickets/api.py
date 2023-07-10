@@ -1,3 +1,4 @@
+# from time import sleep
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -27,6 +28,8 @@ class TicketAPIViewSet(ModelViewSet):
     def get_queryset(self) -> QuerySet:
         user = self.request.user
         all_tickets = Ticket.objects.all()
+
+        # sleep(10)
 
         if user.role == Role.ADMIN:
             return all_tickets
