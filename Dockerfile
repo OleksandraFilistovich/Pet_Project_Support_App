@@ -6,10 +6,10 @@ COPY . .
 RUN apt-get update \
     && pip install --upgrade pip \
     && pip install --upgrade setuptools \
-    && pip install pipenv
-
-
+    && pip install pipenv \
+    && pip install watchdog
+    # && pip install web-pdb
 
 RUN pipenv sync --dev --system
 
-CMD bash
+CMD python src/manage.py runserver 0.0.0.0:8000
