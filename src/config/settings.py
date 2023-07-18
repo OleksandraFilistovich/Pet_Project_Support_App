@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = getenv("DJANGO_SECRET_KEY", default="invalid")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = strtobool(getenv("DJANGO_DEBUG", default="1"))
 
 ALLOWED_HOSTS = ["*"]
 
@@ -172,7 +172,7 @@ if DEBUG is True:
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=getenv("JWT_ACCESS_TOKEN_LIFETIME", default=5),
+        seconds=getenv("JWT_ACCESS_TOKEN_LIFETIME", default=15),
     ),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
