@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv("DJANGO_SECRET_KEY", default="invalid")
+SECRET_KEY = getenv("DJANGO_SECRET_KEY", default="^nwuz631@d_ez()m2qb!a1@!dx!l_(zl(u7p)pyw673wq0!bf2")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = strtobool(getenv("DJANGO_DEBUG", default="1"))
+DEBUG = strtobool(getenv("DJANGO_DEBUG", default="true"))
 
 ALLOWED_HOSTS = ["*"]
 
@@ -142,7 +142,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-POKEAPI_BASE_URL = getenv("POKEAPI_BASE_URL", default="invalid")
+POKEAPI_BASE_URL = getenv("POKEAPI_BASE_URL", default="https://pokeapi.co/api/v2/pokemon")
 
 
 AUTH_USER_MODEL = "users.User"
@@ -179,4 +179,4 @@ SIMPLE_JWT = {
 }
 
 
-CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", default="invalid")
+CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", default="redis://broker:6379/0")
