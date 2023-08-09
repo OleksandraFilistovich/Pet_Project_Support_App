@@ -1,4 +1,4 @@
-# Hillel_Support_App
+# Support_App
 
 
 ## Application setup
